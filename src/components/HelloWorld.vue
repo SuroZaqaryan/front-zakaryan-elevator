@@ -2,16 +2,22 @@
 export default {
   props: [ 'floors', 'elevators' ],
 
+  mounted() {
+    for(let i = 0; i <= this.elevators; i++) {
+      this.elevatorsPosition.push(0)
+    }
+  },
+
   data() {
     return {
-      bottom: 0,
+      elevatorsPosition: [],
     };
   },
 
   methods: {
     incrementTop(elevator, ref) {
-      this.bottom += 10;
-      ref[0].style.bottom = this.bottom + '%';
+      let currentElevatorPosition = this.elevatorsPosition[elevator] += 10;
+      ref[0].style.bottom = currentElevatorPosition + '%';
     },
   },
 };
@@ -22,7 +28,7 @@ export default {
     <div v-for="elevator in elevators" :key="elevator" class="mine">
       <button @click="incrementTop(elevator, $refs[`elevator-${elevator}`])">Up</button>
 
-      <div v-bind:ref="'elevator-' + elevator" class="elevator">
+      <div :ref="'elevator-' + elevator" class="elevator">
         {{ floors }}
       </div>
     </div>
