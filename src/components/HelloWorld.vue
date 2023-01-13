@@ -49,25 +49,14 @@ export default {
       <hr v-for="floor in floors + 1" :key="floor"/>
     </div>
 
-    <transition-group
-        name="fade"
-        tag="div"
-        enter-active-class="animated fadeIn" leave-active-class="animated fadeOut"
-        style="display: flex">
-
-      <div v-for="elevator in elevators" :key="elevator" class="mine">
-        <transition name="fade">
-          <div @transitionend="transitionEnd" :style="toUp" ref="elevator" class="elevator">
-            {{ elevator }}
-          </div>
-        </transition>
+    <div v-for="elevator in elevators" :key="elevator" class="mine">
+      <div :style="toUp" ref="elevator" class="elevator">
+        {{ elevator }}
       </div>
-
-    </transition-group>
+    </div>
 
     <div class="buttons">
-      <button v-for="floor in floors" :key="floor"
-              @click="incrementTop(floor, $refs['elevator'])">
+      <button v-for="floor in floors" :key="floor" @click="incrementTop(floor, $refs['elevator'])">
         Up {{ floor }}
       </button>
     </div>
@@ -95,16 +84,16 @@ export default {
   height: 200px;
   box-sizing: border-box;
   border: 1px solid;
-  transition: 3s ease;
 }
 
 .floors {
   width: 100%;
-  position: absolute;
   height: 100vh;
+  position: absolute;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: 3s ease;
 }
 
 .floors hr {
