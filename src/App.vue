@@ -1,16 +1,16 @@
 <template>
   <main>
-    <HelloWorld :floors="5" :elevators="2"/>
+    <Home :floors="5" :elevators="1"/>
   </main>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Home from './components/Home.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Home
   }
 }
 </script>
@@ -20,6 +20,7 @@ body {
   background: rgb(88, 88, 88);
   margin: 0;
   padding: 0;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
