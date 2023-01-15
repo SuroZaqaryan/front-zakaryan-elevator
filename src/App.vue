@@ -1,6 +1,6 @@
 <template>
   <main>
-    <Home :floors="7" :elevators="3"/>
+    <Home :floors="7" :elevators="1"/>
   </main>
 </template>
 
@@ -17,7 +17,6 @@ export default {
 
 <style>
 body {
-  background: rgb(88, 88, 88);
   margin: 0;
   padding: 0;
   overflow: hidden;
