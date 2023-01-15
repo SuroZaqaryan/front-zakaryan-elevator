@@ -24,7 +24,7 @@ export default {
   },
 
   methods: {
-    addPendingCalls(elevator, refButton, refElevator) {
+    addPendingCalls(elevator, refButton, floorNumber) {
       this.refButton = refButton;
       this.btnsActiveGroup.push(elevator - 1)
 
@@ -32,7 +32,8 @@ export default {
       else this.currentElevator = 0
 
       this.floorsGroup[this.currentElevator].push(elevator)
-      refElevator[this.currentElevator].textContent = this.floorsGroup[this.currentElevator][0]
+      floorNumber[this.currentElevator].textContent = this.floorsGroup[this.currentElevator][0]
+      floorNumber[this.currentElevator].style.opacity = '1'
 
       // Adding an Active Color to a Button
       this.btnsActiveGroup.forEach(i => { this.refButton[i].classList.add('btn-active') })
@@ -42,7 +43,7 @@ export default {
       this.nearestMin = elevators[this.currentElevator] - 1;
     },
 
-    incrementTop(refElevator, nearestMins = this.nearestMin) {
+    incrementTop(refElevator, floorNumber, nearestMins = this.nearestMin) {
       // Get the nearest minimum number for call elevator
       refElevator[nearestMins].style.transition = 'all 3s ease';
       // Elevator movement
@@ -59,14 +60,16 @@ export default {
         });
 
         timeout(3000).then(() => {
+          
           // Showing floor number
-          this.floorsGroup[nearestMins].shift();
-          refElevator[nearestMins].textContent = this.floorsGroup[nearestMins][0]
+          let floorsGroup = this.floorsGroup[nearestMins];
+          floorsGroup.shift();
+          floorNumber[nearestMins].textContent = floorsGroup[0]
 
           this.waitingCalls[nearestMins].shift();
           // Remove the active button class when the floor is reached
           refElevator[nearestMins].classList.remove('expectation');
-          this.incrementTop(refElevator, nearestMins);
+          this.incrementTop(refElevator, floorNumber, nearestMins);
         });
       }
     },
@@ -88,14 +91,13 @@ export default {
 
     <div v-for="elevator in elevators" :key="elevator" class="mine">
       <div :style="{ height: height }" ref="elevator" class="elevator">
-        <h3 style="font-size: 20px; background: red; font-weight: bold" />
-        {{ elevator }}
+        <span ref="floorNumber" class="floor-number"/>
       </div>
     </div>
 
     <div class="buttons">
-      <button v-for="floor in floors" :key="floor" ref="button"
-        @click="addPendingCalls(floor, $refs['button'], $refs['elevator']), incrementTop($refs['elevator'])">
+      <button v-for="floor in floors" :key="floor" ref="button" 
+        @click="addPendingCalls(floor, $refs['button'], $refs['floorNumber']), incrementTop($refs['elevator'], $refs['floorNumber'])">
         <span>{{ floor }}</span>
         <ul>
           <li class="item inner-border" />
