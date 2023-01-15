@@ -1,6 +1,6 @@
 <template>
   <main>
-    <Home :floors="5" :elevators="1"/>
+    <Home :floors="7" :elevators="3"/>
   </main>
 </template>
 

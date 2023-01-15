@@ -3,51 +3,51 @@ export default {
   props: ['floors', 'elevators'],
 
   mounted() {
+    for (let i = 0; i < this.elevators; i++) this.waitingCalls.push([]);
     this.elevatorsPosition = Array(this.elevators + 1).fill(0)
     this.elevatorHeight = this.$refs.elevators.clientHeight / this.floors;
   },
 
   data() {
     return {
-      elevatorsPosition: [], // Elevators position (starter position equal 0)
       elevatorHeight: 0, // Elevator height
       currentElevator: -1, // Current elevator
-      transitionStart: true,
+      elevatorsPosition: [], // Elevators position (starter position equal 0)
+      waitingCalls: [],
+      nearestMin: '',
+      test: -1,
     };
   },
 
   methods: {
-    calcNextElevator() {
-      if (this.currentElevator < this.elevators - 1) {
-        return this.currentElevator += 1;
-      } else {
-        return this.currentElevator = 0;
-      }
+    addPendingCalls(elevator) {
+      this.test += 1;
+
+      if (this.currentElevator < this.elevators - 1) this.currentElevator += 1
+      else this.currentElevator = 0
+
+      this.waitingCalls[this.currentElevator].push(this.elevatorHeight * (elevator - 1))
+      let elevators = [...Array.from(Array(this.elevators), (_, index) => index + 1)]
+
+      this.nearestMin = elevators[this.currentElevator] - 1;
     },
 
-    incrementTop(elevator, ref) {
+    incrementTop(elevator, ref, nearestMins = this.nearestMin) {
       // Get the nearest minimum number for call elevator
-      let elevators = [...Array.from(Array(this.elevators), (_, index) => index + 1)]
-      let nearestMin = elevators[this.calcNextElevator()] - 1;
+      ref[nearestMins].style.transition = 'all 6s ease';
+      // Elevator movement
+      ref[nearestMins].style.bottom = this.elevatorsPosition[nearestMins] + this.waitingCalls[nearestMins][0] + 'px';
 
-      if(this.transitionStart) {
-        ref[nearestMin].style.transition = 'all 3s ease';
-        // Elevator movement
-        ref[nearestMin].style.bottom = this.elevatorsPosition[nearestMin] + this.elevatorHeight * (elevator - 1) + 'px';
+      // (ontransitionend) When elevator animation finished
+      ref[nearestMins].ontransitionend = () => {
+        const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+        timeout(0).then(() => ref[nearestMins].classList.add('expectation'));
 
-        ref[nearestMin].addEventListener('transitionstart', () => this.transitionStart = false);
-
-        // (ontransitionend) When elevator animation finished
-        ref[nearestMin].ontransitionend = () => {
-          const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-          timeout(0).then(() => ref[nearestMin].classList.add('expectation'));
-
-          timeout(3000).then(() => {
-            ref[nearestMin].classList.remove('expectation')
-            this.transitionStart = true;
-          });
-        }
+        timeout(2000).then(() => {
+          this.waitingCalls[nearestMins].splice(0, 1)
+          ref[nearestMins].classList.remove('expectation')
+          this.incrementTop(elevator, ref, nearestMins);
+        });
       }
     },
   },
@@ -55,9 +55,9 @@ export default {
   computed: {
     height() {
       return `${this.elevatorHeight - 1}px`
-    }
-  }
-};
+    },
+  },
+}
 </script>
 
 <template>
@@ -73,8 +73,12 @@ export default {
     </div>
 
     <div class="buttons">
-      <button v-for="floor in floors" :key="floor" @click="incrementTop(floor, $refs['elevator'])">
-        Up {{ floor }}
+      <button v-for="floor in floors" :key="floor"
+              @click="addPendingCalls(floor), incrementTop(floor, $refs['elevator'])">
+        <span>{{ floor }}</span>
+        <ul>
+          <li class="item inner-border"/>
+        </ul>
       </button>
     </div>
   </div>
