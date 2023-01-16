@@ -32,8 +32,8 @@ export default {
       else this.currentElevator = 0
 
       this.floorsGroup[this.currentElevator].push(elevator)
-      floorNumber[this.currentElevator].textContent = this.floorsGroup[this.currentElevator][0]
-      floorNumber[this.currentElevator].style.opacity = '1'
+      floorNumber[this.currentElevator].innerHTML = this.floorsGroup[this.currentElevator][0]
+      floorNumber[this.currentElevator].style.display = 'flex'
 
       // Adding an Active Color to a Button
       this.btnsActiveGroup.forEach(i => { this.refButton[i].classList.add('btn-active') })
@@ -65,6 +65,10 @@ export default {
           let floorsGroup = this.floorsGroup[nearestMins];
           floorsGroup.shift();
           floorNumber[nearestMins].textContent = floorsGroup[0]
+          
+          if(!floorsGroup.length) {
+            floorNumber[nearestMins].style.display = 'none'
+          }
 
           this.waitingCalls[nearestMins].shift();
           // Remove the active button class when the floor is reached
